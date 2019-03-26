@@ -1,0 +1,38 @@
+if [ x$1 == x ]
+then
+    DATE=`date +%Y%m%d`
+else
+    DATE=$1
+fi
+
+if [ x$2 == x ]
+then
+    ENDDATE=`date +%Y%m%d`
+else
+    ENDDATE=$2
+fi
+
+S=`date -d ${DATE} "+%s"`
+E=`date -d ${ENDDATE} +%s`
+
+SCRIPT=$3
+SCRIPT_NAME=`basename $3`
+
+if [ "$S" -gt "$E" ]
+then
+    echo "Error: start-date > end-date"
+    echo "Usage: launchy.sh {start-date} {end-date} {script}"
+    exit
+fi
+
+while [ $S -le $E ] ;
+do
+    echo `date -d ${DATE} +%F`
+
+    #/usr/bin/python ${SCRIPT} ${DATE} &>/tmp/${SCRIPT_NAME}.${DATE}.log
+    #/home/bigdata/spark-2.1-hadoop-2.7/bin/spark-submit ${SCRIPT} ${DATE} &>/tmp/${SCRIPT_NAME}.${DATE}.log
+    bash ${SCRIPT} ${DATE} &>/tmp/${SCRIPT_NAME}.${DATE}.log
+
+    DATE=`date -d "${DATE} 1 days" "+%Y%m%d"`
+    S=`date -d ${DATE} +%s`
+done
